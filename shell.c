@@ -3,17 +3,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#define BUFFER_SIZE 1024
+
 int main(int argc, char **argv)
 {
-    const int BUFFER_SIZE = 1024;
     char buffer[BUFFER_SIZE];
-    //bzero((void*)buffer, sizeof(char) * BUFFER_SIZE);
+    bzero((void*)buffer, sizeof(char) * BUFFER_SIZE);
 
     int count = 0;
     char* bufferptr[BUFFER_SIZE];
-    //memset(bufferptr, 0, sizeof(char*) * BUFFER_SIZE);
+    memset(bufferptr, 0, sizeof(char*) * BUFFER_SIZE);
 
-    int res = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+    int res = read(STDIN_FILENO, (void*)buffer, (size_t)BUFFER_SIZE);
 
     if (res == -1) {
         printf("Reading from STDIN is fail");
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    buffer[res] = '\0';
+    buffer[--res] = '\0';
 
 ////------ Test -------------------------
 //    write(fd, buffer, res);
@@ -108,9 +109,9 @@ int main(int argc, char **argv)
             // Привязали stdout первого дочернего процесса (последняя выполняемая команда)
             // к файловому дескриптору открытого файла на запись.
             if (i == 0) {
-                close(STDOUT_FILENO);
+                //close(STDOUT_FILENO);
                 dup2(fd, STDOUT_FILENO);
-                close(fd);
+                //close(fd);
 
             // Привязали stdout дочернего процесса к файловому дескриптору нового канала на запись.
             } else {
@@ -147,7 +148,7 @@ int main(int argc, char **argv)
 
     // Завершаем основной процесс.
     if (i == 0) {
-        close(fd); // Закрываем открытый файл.
+        //close(fd); // Закрываем открытый файл.
         return 0;
     }
 
@@ -159,12 +160,12 @@ int main(int argc, char **argv)
 
     // Буфер команды.
     char cmd[BUFFER_SIZE];
-    //memset(cmd, 0, sizeof(char) * BUFFER_SIZE);
+    memset(cmd, 0, sizeof(char) * BUFFER_SIZE);
     int k = 0;
 
     // Массив параметров.
     char *par[BUFFER_SIZE];
-    //memset(par, 0, sizeof(char*) * BUFFER_SIZE);
+    memset(par, 0, sizeof(char*) * BUFFER_SIZE);
     int p = 0;
 
     while (k < len) {
